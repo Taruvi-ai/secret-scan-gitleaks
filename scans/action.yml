@@ -15,7 +15,7 @@ runs:
     - name: Decide what to scan
       shell: bash
       env:
-        REQUESTED_MODE: ${{ inputs.scan_mode || vars.SECRET_SCAN_MODE || 'Working tree + git history' }}
+        REQUESTED_MODE: ${{ inputs.scan_mode || vars.SECRET_SCAN_MODE }}
       run: |
         case "${REQUESTED_MODE:-Working tree + git history}" in
           "Working tree + git history") mode=both ;;
