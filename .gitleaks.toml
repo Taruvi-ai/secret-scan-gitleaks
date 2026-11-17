@@ -1,0 +1,25 @@
+title = "Gitleaks config"
+
+[extend]
+useDefault = true
+
+[[rules]]
+id = "taruvi-api-key"
+description = "Taruvi API key (Api-Key header or 64-char hex value assigned to an api key/token variable)"
+regex = '''(?i)(?:api-key\s+|(?:api[_-]?key|api[_-]?token)["']?\s*[:=]\s*["']?)([a-f0-9]{64})\b'''
+secretGroup = 1
+keywords = ["api-key", "api_key", "apikey", "api-token", "api_token", "apitoken"]
+
+[[rules]]
+id = "hardcoded-password"
+description = "Hardcoded password, passphrase or secret literal"
+regex = '''(?i)(?:pass(?:word|wd|phrase)?|pwd|secret)["']?\s*[:=]\s*["']([^"'\s<>${}]{6,})["']'''
+secretGroup = 1
+keywords = ["pass", "pwd", "secret"]
+
+[[rules]]
+id = "credentials-in-url"
+description = "user:password embedded in a connection URL"
+regex = '''(?i)[a-z][a-z0-9+.-]*://[^/\s:@]+:([^/\s:@${}<>]{6,})@[^/\s]+'''
+secretGroup = 1
+keywords = ["://"]
