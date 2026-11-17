@@ -60,7 +60,7 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           GITLEAKS_LICENSE: ${{ secrets.GITLEAKS_LICENSE }}
-          GITLEAKS_CONFIG: .gitleaks.toml
+          GITLEAKS_CONFIG: ${{ github.action_path }}/.gitleaks.toml
           GITLEAKS_VERSION: ${{ env.GITLEAKS_VERSION }}
           GITLEAKS_ENABLE_SUMMARY: "false"
           GITLEAKS_ENABLE_COMMENTS: "false"
