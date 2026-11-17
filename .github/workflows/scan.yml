@@ -1,0 +1,16 @@
+name: Required Secret Scan
+
+on:
+  pull_request:
+  merge_group:
+
+permissions:
+  contents: read
+
+jobs:
+  gitleaks:
+    name: Gitleaks
+    if: github.repository != 'Taruvi-ai/secret-scan-gitleaks'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: Taruvi-ai/secret-scan-gitleaks@main

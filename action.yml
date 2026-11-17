@@ -1,0 +1,49 @@
+name: Gitleaks Secret Scan
+description: Scan current files and git history for hardcoded secrets
+
+inputs:
+  scan_mode:
+    description: Working tree + git history, Working tree only, or Git history only
+    required: false
+    default: ''
+
+runs:
+  using: composite
+  steps:
+    - name: Decide what to scan
+      shell: bash
+      env:
+        ACTION_PATH: ${{ github.action_path }}
+        REQUESTED_MODE: ${{ inputs.scan_mode || vars.SECRET_SCAN_MODE }}
+      run: bash "$ACTION_PATH/scripts/decide-mode.sh"
+
+    - name: Checkout repository
+      uses: actions/checkout@v6
+      with:
+        fetch-depth: ${{ env.SCAN_MODE == 'working-tree-only' && 1 || 0 }}
+
+    - name: Install Gitleaks
+      shell: bash
+      env:
+        ACTION_PATH: ${{ github.action_path }}
+      run: bash "$ACTION_PATH/scripts/install-gitleaks.sh"
+
+    - name: Run Gitleaks
+      shell: bash
+      env:
+        ACTION_PATH: ${{ github.action_path }}
+        GITLEAKS_CONFIG_PATH: ${{ github.action_path }}/.gitleaks.toml
+      run: bash "$ACTION_PATH/scripts/run-gitleaks.sh"
+
+    - name: Summary, annotations and pass/fail
+      shell: bash
+      env:
+        ACTION_PATH: ${{ github.action_path }}
+        OUT_DIR: ${{ runner.temp }}/secret-scan
+        REPO_URL: ${{ github.server_url }}/${{ github.repository }}
+        REPO_NAME: ${{ github.repository }}
+        REF_NAME: ${{ github.ref_name }}
+        COMMIT_SHA: ${{ github.sha }}
+        ACTOR: ${{ github.actor }}
+        EVENT: ${{ github.event_name }}
+      run: bash "$ACTION_PATH/scripts/summarize.sh"
