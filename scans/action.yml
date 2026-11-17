@@ -80,11 +80,11 @@ jobs:
           rm -f results.sarif   # written by gitleaks-action's own scan; must not be scanned
           # findings do not fail this step (exit-code 0); the last step decides
           if [ "$SCAN_MODE" = "both" ] || [ "$SCAN_MODE" = "working-tree-only" ]; then
-            gitleaks dir . --config .gitleaks.toml --redact --no-banner --log-level error \
+            gitleaks dir . --config "$GITHUB_ACTION_PATH/gitleaks.toml" --redact --no-banner --log-level error \
               --exit-code 0 --report-format json --report-path "$RUNNER_TEMP/secret-scan/working-tree.json"
           fi
           if [ "$SCAN_MODE" = "both" ] || [ "$SCAN_MODE" = "git-history-only" ]; then
-            gitleaks git . --config .gitleaks.toml --redact --no-banner --log-level error \
+            gitleaks git . --config "$GITHUB_ACTION_PATH/gitleaks.toml" --redact --no-banner --log-level error \
               --exit-code 0 --report-format json --report-path "$RUNNER_TEMP/secret-scan/git-history.json"
           fi
 
