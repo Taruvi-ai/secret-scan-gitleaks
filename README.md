@@ -1,6 +1,6 @@
 # Secret Scan with Gitleaks
 
-A central GitHub Action for scanning repositories for hardcoded secrets. Repositories in `Taruvi-ai` and `eoxvantage-com` can call the same action on pushes and pull requests.
+A central GitHub Action for finding hardcoded secrets in repositories across `Taruvi-ai` and `eoxvantage-com`. It uses the rules in this repository’s `scans/.gitleaks.toml`; calling repositories do not need their own copy.
 
 ## Add the caller workflow
 
@@ -11,7 +11,18 @@ name: Secret scan
 
 on:
   push:
+    branches: ['**']
   pull_request:
+  workflow_dispatch:
+    inputs:
+      scan_mode:
+        description: What should be scanned?
+        type: choice
+        default: Working tree + git history
+        options:
+          - Working tree + git history
+          - Working tree only
+          - Git history only
 
 jobs:
   scan:
@@ -20,23 +31,36 @@ jobs:
       contents: read
       pull-requests: read
     env:
-      GITHUB_TOKEN: ${{ github.token }}
       GITLEAKS_LICENSE: ${{ secrets.GITLEAKS_LICENSE }}
     steps:
       - uses: Taruvi-ai/secret-scan-gitleaks/scans@main
+        with:
+          scan_mode: ${{ inputs.scan_mode || vars.SECRET_SCAN_MODE }}
 ```
 
-## Central configuration
+The scan starts automatically for pushes to every branch and for new or updated pull requests. Tag pushes are excluded. The **Run workflow** button also provides a dropdown for a manual scan.
 
-The scanning rules are maintained in this repository’s `scans/.gitleaks.toml`. Calling repositories do not need a copy. 
+Each workflow has its own triggers. Adding this caller does not change when existing CI or Deploy workflows run.
 
-The action checks the calling repository and fails the job when it finds secrets. Review the run’s summary and annotations for the locations of findings. Rotate any real credential that has been committed, even if it was later removed from a file.
+## Scan modes
 
-## Handling findings
+| Value | What it scans |
+|---|---|
+| `Working tree + git history` | Current files and Git history |
+| `Working tree only` | Current files |
+| `Git history only` | Git history |
 
-1. Revoke or rotate any real exposed credential.
-2. Remove secrets from current files and use an appropriate secret store or environment variable.
-3. Review historical findings even if the value has been deleted from the latest version.
+For automatic runs, set an optional Actions variable named `SECRET_SCAN_MODE` in the calling organization or repository. Use one of the exact values above. If the variable is absent, the action scans both current files and Git history.
+
+The manual dropdown selection takes priority over the variable. Organization variables must be configured separately in `Taruvi-ai` and `eoxvantage-com`.
+
+## License secret
+
+Add `GITLEAKS_LICENSE` for private repositories in an organization on GitHub Free, use a repository-level secret and variable: organization-level secrets and variables are unavailable to those repositories. GitHub also withholds Actions secrets from `pull_request` runs originating from forks. [GitHub Actions secrets](https://docs.github.com/en/actions/how-tos/write-workflows/choose-what-workflows-do/use-secrets)
+
+## Review findings
+
+The action fails the scan job when it finds secrets. Open the run’s **Summary** tab for file locations and guidance. Rotate or revoke real credentials, including ones found only in Git history. Review false positives before updating the central `scans/.gitleaks.toml` or adding a `.gitleaksignore` entry.
 
 ## License
 
