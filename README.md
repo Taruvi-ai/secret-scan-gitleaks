@@ -50,7 +50,7 @@ The `scan_mode` input accepts `Working tree + git history` (default), `Working t
     scan_mode: Working tree only
 ```
 
-The `SECRET_SCAN_MODE` Actions variable is also used when no input is supplied. The run summary and annotations show locations, counts, and remediation guidance without printing secret values. A scan error or missing report fails the job rather than passing silently.
+To use a repository's `SECRET_SCAN_MODE` Actions variable, pass it explicitly as `scan_mode: ${{ vars.SECRET_SCAN_MODE }}` in the caller. The run summary and annotations show locations, counts, and remediation guidance without printing secret values. A scan error or missing report fails the job rather than passing silently.
 
 Rotate or revoke a real credential before removing it from the current files or history. Review false positives before changing the central rules or adding a fingerprint to a caller repository's `.gitleaksignore`. A passing scan is a safety net, not proof that a repository has no secrets.
 

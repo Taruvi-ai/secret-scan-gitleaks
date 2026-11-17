@@ -14,7 +14,7 @@ runs:
       shell: bash
       env:
         ACTION_PATH: ${{ github.action_path }}
-        REQUESTED_MODE: ${{ inputs.scan_mode || vars.SECRET_SCAN_MODE }}
+        REQUESTED_MODE: ${{ inputs.scan_mode }}
       run: bash "$ACTION_PATH/scripts/decide-mode.sh"
 
     - name: Checkout repository
