@@ -36,7 +36,7 @@ jobs:
           scan_mode: ${{ inputs.scan_mode || vars.SECRET_SCAN_MODE }}
 ```
 
-The scan starts automatically for pushes to every branch and for new or updated pull requests. Tag pushes are excluded. The **Run workflow** button also provides a dropdown for a manual scan.
+The scan starts automatically for new or updated pull requests. The **Run workflow** button also provides a dropdown for a manual scan.
 
 Each workflow has its own triggers. Adding this caller does not change when existing CI or Deploy workflows run.
 
