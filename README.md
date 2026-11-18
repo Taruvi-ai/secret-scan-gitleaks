@@ -10,8 +10,6 @@ Create `.github/workflows/secret-scan.yml` in each repository:
 name: Secret scan
 
 on:
-  push:
-    branches: ['**']
   pull_request:
   workflow_dispatch:
     inputs:
@@ -58,9 +56,11 @@ The manual dropdown selection takes priority over the variable. Organization var
 
 Add `GITLEAKS_LICENSE` for private repositories in an organization on GitHub Free, use a repository-level secret and variable: organization-level secrets and variables are unavailable to those repositories. GitHub also withholds Actions secrets from `pull_request` runs originating from forks. [GitHub Actions secrets](https://docs.github.com/en/actions/how-tos/write-workflows/choose-what-workflows-do/use-secrets)
 
-## Review findings
+### When a secret scan fails
 
-The action fails the scan job when it finds secrets. Open the run’s **Summary** tab for file locations and guidance. Rotate or revoke real credentials, including ones found only in Git history. Review false positives before updating the central `scans/.gitleaks.toml` or adding a `.gitleaksignore` entry.
+If a scan fails due to exposed secrets, review the findings in the run's **Summary** tab to locate the affected files and Git history. 
+
+Rotate or revoke those compromised credentials immediately, push your fix to the pull request, and ensure the scan passes before merging.
 
 ## License
 
